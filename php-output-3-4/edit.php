@@ -9,7 +9,6 @@ if ($id <= 0) {
     exit;
 }
 
-// ---- Handle update submission ----
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_update'])) {
 
     $full_name      = trim($_POST['full_name'] ?? '');
@@ -52,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_update'])) {
     }
 }
 
-// ---- Fetch existing record ----
 $stmt = mysqli_prepare($conn, "SELECT * FROM persons WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
@@ -64,7 +62,6 @@ if (!$person) {
     exit;
 }
 
-// Use posted values on validation error, otherwise DB values
 $full_name      = $_POST['full_name'] ?? $person['full_name'];
 $age            = $_POST['age'] ?? $person['age'];
 $gender         = $_POST['gender'] ?? $person['gender'];

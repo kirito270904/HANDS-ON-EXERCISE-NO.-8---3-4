@@ -4,12 +4,10 @@ require_once 'includes/db.php';
 $errors = [];
 $success = "";
 
-// Pre-fill values (kept on validation error so user doesn't retype everything)
 $full_name = $age = $gender = $email = $address = $contact_number = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_register'])) {
 
-    // ---- Collect & sanitize input ----
     $full_name      = trim($_POST['full_name'] ?? '');
     $age            = trim($_POST['age'] ?? '');
     $gender         = trim($_POST['gender'] ?? '');
@@ -17,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_register'])) {
     $address        = trim($_POST['address'] ?? '');
     $contact_number = trim($_POST['contact_number'] ?? '');
 
-    // ---- Server-side validation ----
     if ($full_name === "") {
         $errors['full_name'] = "Full name is required.";
     } elseif (!preg_match("/^[a-zA-Z\s\.\-]+$/", $full_name)) {
@@ -50,18 +47,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_register'])) {
         $errors['contact_number'] = "Enter a valid contact number.";
     }
 
-    // ---- Insert into database if no errors ----
     if (empty($errors)) {
         $stmt = mysqli_prepare(
             $conn,
             "INSERT INTO persons (full_name, age, gender, email, address, contact_number)
              VALUES (?, ?, ?, ?, ?, ?)"
         );
-        mysqli_stmt_bind_param($stmt, "sisss", $full_name, $age, $gender, $email, $address, $contact_number);
+        mysqli_stmt_bind_param($stmt, "sissss", $full_name, $age, $gender, $email, $address, $contact_number);
 
         if (mysqli_stmt_execute($stmt)) {
             $success = "Record saved successfully!";
-            // clear fields after successful insert
             $full_name = $age = $gender = $email = $address = $contact_number = "";
         } else {
             $errors['general'] = "Error saving record: " . mysqli_error($conn);
@@ -70,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_register'])) {
     }
 }
 
-// ---- Fetch all registered persons for the list ----
 $result = mysqli_query($conn, "SELECT * FROM persons ORDER BY id DESC");
 ?>
 <!DOCTYPE html>
@@ -120,7 +114,7 @@ $result = mysqli_query($conn, "SELECT * FROM persons ORDER BY id DESC");
                 <div class="form-group">
                     <label>Gender <span class="req">*</span></label>
                     <select name="gender">
-                        <option value="">-- Select Gender --</option>
+                        <option value=""> Select Gender </option>
                         <option value="Male"   <?php echo $gender === 'Male' ? 'selected' : ''; ?>>Male</option>
                         <option value="Female" <?php echo $gender === 'Female' ? 'selected' : ''; ?>>Female</option>
                         <option value="Other"  <?php echo $gender === 'Other' ? 'selected' : ''; ?>>Other</option>
@@ -184,15 +178,15 @@ $result = mysqli_query($conn, "SELECT * FROM persons ORDER BY id DESC");
                 <?php if (mysqli_num_rows($result) > 0): ?>
                     <?php while ($row = mysqli_fetch_assoc($result)): ?>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
-                            <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['age']); ?></td>
-                            <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                            <td><?php echo htmlspecialchars($row['email']); ?></td>
-                            <td><?php echo htmlspecialchars($row['address']); ?></td>
-                            <td><?php echo htmlspecialchars($row['contact_number']); ?></td>
-                            <td><?php echo htmlspecialchars($row['date_registered']); ?></td>
-                            <td class="actions">
+                            <td data-label="#"><?php echo $row['id']; ?></td>
+                            <td data-label="Full Name"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                            <td data-label="Age"><?php echo htmlspecialchars($row['age']); ?></td>
+                            <td data-label="Gender"><?php echo htmlspecialchars($row['gender']); ?></td>
+                            <td data-label="Email"><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td data-label="Address"><?php echo htmlspecialchars($row['address']); ?></td>
+                            <td data-label="Contact No."><?php echo htmlspecialchars($row['contact_number']); ?></td>
+                            <td data-label="Date Registered"><?php echo htmlspecialchars($row['date_registered']); ?></td>
+                            <td class="actions" data-label="">
                                 <a class="btn-small btn-edit" href="edit.php?id=<?php echo $row['id']; ?>">Edit</a>
                                 <a class="btn-small btn-delete" href="delete.php?id=<?php echo $row['id']; ?>"
                                    onclick="return confirm('Delete this record?');">Delete</a>

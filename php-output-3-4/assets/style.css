@@ -189,6 +189,73 @@ tr:hover {
 
 .actions {
     white-space: nowrap;
+    display: flex;
+    gap: 6px;
+}
+
+.btn-small {
+    margin-right: 0;
+}
+
+/* ---- Responsive: turn table into stacked cards on small screens ---- */
+@media (max-width: 700px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        background: #fff;
+        border: 1px solid #eef2f5;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    tbody tr.empty-row {
+        border: none;
+        box-shadow: none;
+        text-align: center;
+    }
+
+    td {
+        border-bottom: none;
+        padding: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        text-align: right;
+    }
+
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #1a3c6e;
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    td.actions {
+        justify-content: flex-end;
+    }
+
+    td.actions::before {
+        content: "";
+    }
+
+    .btn-small {
+        flex: 1;
+        text-align: center;
+    }
 }
 
 footer {

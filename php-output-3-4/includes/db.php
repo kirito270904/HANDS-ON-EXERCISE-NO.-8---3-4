@@ -1,9 +1,4 @@
 <?php
-/**
- * Database connection
- * PHP Output #3 & #4 - Saint Michael College of Caraga
- */
-
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
